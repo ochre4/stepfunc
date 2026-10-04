@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Степенная функция — интерактивный тренажёр</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: #eef1f5;
+    color: #2c3e50;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  header {
+    max-width: 1200px;
+    margin: 0 auto 20px;
+    text-align: center;
+    border-bottom: 2px solid #1e3a5f;
+    padding-bottom: 12px;
+  }
+  header h1 {
+    font-size: 26px;
+    color: #1e3a5f;
+    font-weight: normal;
+    letter-spacing: 1px;
+  }
+  header .subtitle {
+    font-size: 14px;
+    color: #5a6c7d;
+    margin-top: 4px;
+    font-style: italic;
+  }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 20px;
+  }
+  .panel {
+    background: #ffffff;
+    border-radius: 6px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(30,58,95,0.08);
+    border: 1px solid #d8dde3;
+  }
+  .formula {
+    text-align: center;
+    font-size: 24px;
+    margin: 10px 0 15px;
+    padding: 12px;
+    background: #f7f9fc;
+    border-left: 4px solid #1e3a5f;
+    font-family: 'Cambria Math', 'Times New Roman', serif;
+    color: #1e3a5f;
+  }
+  canvas {
+    background: #ffffff;
+    border: 1px solid #d8dde3;
+    width: 100%;
+    display: block;
+  }
+  .control { margin: 14px 0; }
+  .control label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #1e3a5f;
+    font-weight: bold;
+  }
+  input[type=range] {
+    width: 100%;
+    accent-color: #1e3a5f;
+  }
+  .value {
+    color: #8b0000;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+  }
+  .props {
+    font-size: 14px;
+    line-height: 1.8;
+    background: #f7f9fc;
+    padding: 12px 15px;
+    border-radius: 4px;
+    border-left: 3px solid #8b0000;
+    margin-top: 10px;
+  }
+  .props b { color: #1e3a5f; }
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #1e3a5f;
+  }
+  .tab {
+    flex: 1;
+    padding: 10px 15px;
+    background: #f7f9fc;
+    border: 1px solid #d8dde3;
+    border-bottom: none;
+    color: #5a6c7d;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: inherit;
+    border-radius: 4px 4px 0 0;
+    margin-right: 4px;
+    transition: 0.2s;
+  }
+  .tab.active {
+    background: #1e3a5f;
+    color: #ffffff;
+    font-weight: bold;
+    border-color: #1e3a5f;
+  }
+  .content { display: none; }
+  .content.active { display: block; }
+  select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #d8dde3;
+    border-radius: 4px;
+    background: #ffffff;
+    color: #2c3e50;
+    font-family: inherit;
+    font-size: 14px;
+  }
+
+  .values-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 13px;
+  }
+  .values-table th, .values-table td {
+    border: 1px solid #d8dde3;
+    padding: 6px 8px;
+    text-align: center;
+  }
+  .values-table th {
+    background: #1e3a5f;
+    color: #fff;
+    font-weight: normal;
+  }
+  .values-table td { background: #f7f9fc; }
+  .values-table .undefined {
+    color: #8b0000;
+    font-style: italic;
+  }
+
+  .tangent-info {
+    background: #fff9e6;
+    border-left: 3px solid #d4a017;
+    padding: 12px 15px;
+    margin-top: 15px;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .tangent-info b { color: #1e3a5f; }
+  .tangent-formula {
+    font-family: 'Cambria Math', 'Times New Roman', serif;
+    color: #8b0000;
+    font-size: 16px;
+    margin: 8px 0;
+    display: block;
+  }
+
+  .memo-intro {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #5a6c7d;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #f7f9fc;
+    border-left: 3px solid #1e3a5f;
+    font-style: italic;
+  }
+  .memo-card {
+    background: #ffffff;
+    border: 1px solid #d8dde3;
+    border-left: 4px solid #1e3a5f;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 12px;
+    transition: 0.2s;
+  }
+  .memo-card:hover {
+    box-shadow: 0 2px 10px rgba(30,58,95,0.12);
+    border-left-color: #8b0000;
+  }
+  .memo-card h3 {
+    color: #1e3a5f;
+    font-size: 16px;
+    margin-bottom: 8px;
+    border-bottom: 1px dashed #d8dde3;
+    padding-bottom: 6px;
+  }
+  .memo-card .formula-inline {
+    font-family: 'Cambria Math', 'Times New Roman', serif;
+    color: #8b0000;
+    font-size: 16px;
+    margin: 6px 0;
+    display: block;
+  }
+  .memo-card p {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 6px;
+    text-align: justify;
+  }
+  .memo-card ul {
+    margin: 8px 0 0 20px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .memo-card ul li { margin-bottom: 3px; }
+  .memo-card .tag {
+    display: inline-block;
+    background: #1e3a5f;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    margin-right: 5px;
+    letter-spacing: 0.5px;
+  }
+
+  .exam-task {
+    background: #ffffff;
+    border: 1px solid #d8dde3;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+  .exam-task .level {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+  .level-basic { background: #2ecc71; color: #fff; }
+  .level-profile { background: #e74c3c; color: #fff; }
+  .exam-task .question {
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 12px;
+    color: #2c3e50;
+  }
+  .exam-task .answers {
+    display: grid;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .exam-task .answer-btn {
+    padding: 8px 12px;
+    background: #f7f9fc;
+    border: 1px solid #d8dde3;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    font-size: 14px;
+    transition: 0.2s;
+  }
+  .exam-task .answer-btn:hover { background: #e8ebf0; }
+  .exam-task .answer-btn.correct {
+    background: #2ecc71;
+    color: #fff;
+    border-color: #27ae60;
+  }
+  .exam-task .answer-btn.wrong {
+    background: #e74c3c;
+    color: #fff;
+    border-color: #c0392b;
+  }
+  .exam-task .solution {
+    display: none;
+    background: #f7f9fc;
+    border-left: 3px solid #1e3a5f;
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .exam-task .solution.show { display: block; }
+  .exam-task .solution b { color: #1e3a5f; }
+  .exam-task .solution .formula {
+    font-family: 'Cambria Math', 'Times New Roman', serif;
+    color: #8b0000;
+    font-size: 15px;
+    margin: 6px 0;
+    display: block;
+  }
+  .show-solution-btn {
+    padding: 8px 16px;
+    background: #1e3a5f;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    display: none;
+  }
+  .show-solution-btn.show { display: inline-block; }
+
+  .exam-header {
+    font-size: 18px;
+    color: #1e3a5f;
+    margin: 20px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #d8dde3;
+  }
+  .exam-header:first-child { margin-top: 0; }
+
+  @media(max-width: 900px) {
+    .container { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>СТЕПЕННАЯ ФУНКЦИЯ</h1>
+  <div class="subtitle">Алгебра и начала математического анализа · 11 класс · y = a·xᵖ</div>
+</header>
+
+<div class="container">
+  <div class="panel">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('graph', this)">График функции</button>
+      <button class="tab" onclick="switchTab('memo', this)">Памятка по теории</button>
+      <button class="tab" onclick="switchTab('exam', this)">Задачи ЕГЭ</button>
+    </div>
+
+    <!-- ВКЛАДКА ГРАФИК -->
+    <div id="graphContent" class="content active">
+      <div class="formula" id="formula">y = x²</div>
+      <canvas id="graph" width="700" height="500"></canvas>
+
+      <div class="control">
+        <label>Коэффициент a = <span class="value" id="aVal">1</span></label>
+        <input type="range" id="a" min="-5" max="5" step="0.1" value="1">
+      </div>
+
+      <div class="control">
+        <label>Тип показателя степени p:</label>
+        <select id="nType">
+          <option value="int">Целое неотрицательное (0, 1, 2, 3, …)</option>
+          <option value="frac">Дробное положительное (m/k)</option>
+          <option value="neg">Отрицательное целое (−1, −2, −3, …)</option>
+        </select>
+      </div>
+
+      <div class="control" id="intCtrl">
+        <label>Показатель p = <span class="value" id="nVal">2</span></label>
+        <input type="range" id="n" min="0" max="10" step="1" value="2">
+      </div>
+
+      <div class="control" id="fracCtrl" style="display:none;">
+        <label>Числитель m = <span class="value" id="mVal">1</span></label>
+        <input type="range" id="m" min="1" max="7" step="1" value="1">
+        <label>Знаменатель k = <span class="value" id="kVal">2</span></label>
+        <input type="range" id="k" min="1" max="7" step="2" value="2">
+      </div>
+
+      <div class="control">
+        <label>Точка касания x₀ = <span class="value" id="x0Val">1</span></label>
+        <input type="range" id="x0" min="-3" max="3" step="0.1" value="1">
+      </div>
+
+      <div class="props" id="props"></div>
+
+      <table class="values-table" id="valuesTable">
+        <thead>
+          <tr>
+            <th>x</th><th>−3</th><th>−2</th><th>−1</th><th>0</th><th>1</th><th>2</th><th>3</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>y</b></td>
+            <td id="y-3">—</td><td id="y-2">—</td><td id="y-1">—</td>
+            <td id="y0">—</td><td id="y1">—</td><td id="y2">—</td><td id="y3">—</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="tangent-info" id="tangentInfo">
+        <b>Касательная в точке x₀ = <span id="x0Display">1</span>:</b>
+        <span class="tangent-formula" id="tangentFormula">y = 2x − 1</span>
+        <b>Значение производной:</b> f′(x₀) = <span id="derivativeVal">2</span>
+      </div>
+    </div>
+
+    <!-- ВКЛАДКА ПАМЯТКА -->
+    <div id="memoContent" class="content">
+      <div class="memo-intro">
+        Степенная функция задаётся формулой <b>y = xᵖ</b>, где <b>p</b> — любое рациональное число.
+        Поведение её графика и свойства полностью зависят от значения показателя степени.
+        Ниже приведены пять основных случаев, изучаемых в школьном курсе.
+      </div>
+
+      <div class="memo-card">
+        <h3><span class="tag">СЛУЧАЙ 1</span> Показатель — чётное натуральное число</h3>
+        <span class="formula-inline">y = x², y = x⁴, y = x⁶, …</span>
+        <p>Если степень принимает значения 2, 4, 6 и так далее, функция становится <b>чётной</b>.
+        График симметричен относительно оси ординат (оси Oy). Самый известный пример — парабола.</p>
+        <ul>
+          <li><b>ОДЗ:</b> (−∞; +) — все действительные числа</li>
+          <li><b>Область значений:</b> [0; +∞)</li>
+          <li><b>Чётность:</b> функция чётная, f(−x) = f(x)</li>
+          <li><b>Монотонность:</b> убывает на (−; 0], возрастает на [0; +∞)</li>
+          <li><b>График проходит через точки:</b> (0; 0), (1; 1), (−1; 1)</li>
+        </ul>
+      </div>
+
+      <div class="memo-card">
+        <h3><span class="tag">СЛУЧАЙ 2</span> Показатель — нечётное натуральное число</h3>
+        <span class="formula-inline">y = x³, y = x⁵, y = x⁷, …</span>
+        <p>Когда показатель равен 3, 5, 7 и т. д., функция называется <b>нечётной</b>.
+        Её график симметричен относительно начала координат. Классический представитель — кубическая парабола.</p>
+        <ul>
+          <li><b>ОДЗ:</b> (−∞; +∞) — все действительные числа</li>
+          <li><b>Область значений:</b> (−∞; +∞)</li>
+          <li><b>Чётность:</b> функция нечётная, f(−x) = −f(x)</li>
+          <li><b>Монотонность:</b> возрастает на всей области определения</li>
+          <li><b>График проходит через точки:</b> (0; 0), (1; 1), (−1; −1)</li>
+        </ul>
+      </div>
+
+      <div class="memo-card">
+        <h3><span class="tag">СЛУЧАЙ 3</span> Показатель — отрицательное целое число</h3>
+        <span class="formula-inline">y = x⁻¹ = 1/x, &nbsp; y = x⁻² = 1/x², …</span>
+        <p>Отрицательная степень «опускает» переменную в знаменатель: x⁻ᵖ = 1/xᵖ.
+        Базовое математическое правило запрещает делить на нуль, поэтому <b>x ≠ 0</b>.
+        График распадается на две ветви, которые никогда не пересекают оси координат.
+        При p = −1 графиком является гипербола.</p>
+        <ul>
+          <li><b>ОДЗ:</b> (−∞; 0) ∪ (0; +∞)</li>
+          <li><b>Область значений:</b> (−∞; 0) ∪ (0; +∞)</li>
+          <li><b>Чётность:</b> чётная, если |p| чётно; нечётная, если |p| нечётно</li>
+          <li><b>Монотонность:</b> убывает на каждом из промежутков (при a &gt; 0)</li>
+          <li><b>Асимптоты:</b> x = 0 (вертикальная), y = 0 (горизонтальная)</li>
+        </ul>
+      </div>
+
+      <div class="memo-card">
+        <h3><span class="tag">СЛУЧАЙ 4</span> Показатель — положительная дробь</h3>
+        <span class="formula-inline">y = x^(1/2) = √x, &nbsp; y = x^(1/3) = ∛x, &nbsp; y = x^(m/k)</span>
+        <p>Дробная степень означает переход к корню: x^(m/k) = √(x).
+        В школьном курсе степенная функция с нецелым показателем рассматривается
+        <b>только для неотрицательных значений x</b>. График выглядит как плавная ветвь,
+        выходящая из начала координат и уходящая вправо и вверх.</p>
+        <ul>
+          <li><b>ОДЗ:</b> [0; +∞)</li>
+          <li><b>Область значений:</b> [0; +∞)</li>
+          <li><b>Чётность:</b> функция общего вида (не является ни чётной, ни нечётной)</li>
+          <li><b>Монотонность:</b> возрастает на всей области определения</li>
+          <li><b>График проходит через точки:</b> (0; 0), (1; 1)</li>
+        </ul>
+      </div>
+
+      <div class="memo-card">
+        <h3><span class="tag">СЛУЧАЙ 5</span> Показатель равен нулю</h3>
+        <span class="formula-inline">y = x⁰ = 1, &nbsp; x ≠ 0</span>
+        <p>У функции y = x⁰ есть особенность: любое число в нулевой степени даёт единицу.
+        Графиком является горизонтальная прямая <b>y = 1</b>. Однако выражение 0⁰ не имеет смысла,
+        поэтому точка с координатой <b>x = 0 выкалывается</b> — на графике остаётся пустая отметка
+        на сплошной прямой.</p>
+        <ul>
+          <li><b>ОДЗ:</b> (−∞; 0) ∪ (0; +∞)</li>
+          <li><b>Область значений:</b> {1} — единственное значение</li>
+          <li><b>Чётность:</b> функция чётная</li>
+          <li><b>Монотонность:</b> постоянна на всей области определения</li>
+          <li><b>Особая точка:</b> «прокол» в точке (0; 1)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ВКЛАДКА ЗАДАЧИ ЕГЭ -->
+    <div id="examContent" class="content">
+      <div class="memo-intro">
+        Типовые задания из ЕГЭ по математике (базовый и профильный уровни) на тему степенной функции и производной.
+        Решите задачу, выберите ответ, затем нажмите «Показать решение» для подробного разбора.
+      </div>
+
+      <div class="exam-header">📘 Базовый уровень</div>
+
+      <div class="exam-task" id="task1">
+        <span class="level level-basic">БАЗОВЫЙ · №1</span>
+        <div class="question">
+          Найдите значение функции f(x) = x³ в точке x = −2.
+        </div>
+        <div class="answers">
+          <button class="answer-btn" onclick="checkAnswer('task1', 0, this)">−6</button>
+          <button class="answer-btn" onclick="checkAnswer('task1', 1, this)">−8</button>
+          <button class="answer-btn" onclick="checkAnswer('task1', 2, this)">8</button>
+          <button class="answer-btn" onclick="checkAnswer('task1', 3, this)">6</button>
+        </div>
+        <button class="show-solution-btn" onclick="showSolution('task1')">Показать решение</button>
+        <div class="solution">
+          <b>Решение:</b>
+          <span class="formula">f(x) = x³</span>
+          Подставляем x = −2:
+          <span class="formula">f(−2) = (−2)³ = (−2)·(−2)·(−2) = −8</span>
+          <b>Ответ: −8</b>
+        </div>
+      </div>
+
+      <div class="exam-task" id="task2">
+        <span class="level level-basic">БАЗОВЫЙ · №2</span>
+        <div class="question">
+          Определите, является ли функция f(x) = x⁴ чётной, нечётной или общего вида.
+        </div>
+        <div class="answers">
+          <button class="answer-btn" onclick="checkAnswer('task2', 0, this)">Чётная</button>
+          <button class="answer-btn" onclick="checkAnswer('task2', 1, this)">Нечётная</button>
+          <button class="answer-btn" onclick="checkAnswer('task2', 2, this)">Общего вида</button>
+        </div>
+        <button class="show-solution-btn" onclick="showSolution('task2')">Показать решение</button>
+        <div class="solution">
+          <b>Решение:</b>
+          Проверяем условие чётности: f(−x) = f(x)
+          <span class="formula">f(−x) = (−x)⁴ = (−1)⁴·x⁴ = 1·x⁴ = x⁴ = f(x)</span>
+          Условие чётности выполнено.
+          <br><br>
+          <b>Правило:</b> если показатель степени чётный — функция чётная.
+          <br><br>
+          <b>Ответ: чётная</b>
+        </div>
+      </div>
+
+      <div class="exam-task" id="task3">
+        <span class="level level-basic">БАЗОВЫЙ · №3</span>
+        <div class="question">
+          Найдите область определения функции f(x) = x⁻².
+        </div>
+        <div class="answers">
+          <button class="answer-btn" onclick="checkAnswer('task3', 0, this)">(−∞; +∞)</button>
+          <button class="answer-btn" onclick="checkAnswer('task3', 1, this)">[0; +∞)</button>
+          <button class="answer-btn" onclick="checkAnswer('task3', 2, this)">(−∞; 0) ∪ (0; +∞)</button>
+          <button class="answer-btn" onclick="checkAnswer('task3', 3, this)">(0; +∞)</button>
+        </div>
+        <button class="show-solution-btn" onclick="showSolution('task3')">Показать решение</button>
+        <div class="solution">
+          <b>Решение:</b>
+          Преобразуем функцию:
+          <span class="formula">f(x) = x⁻² = 1/x²</span>
+          Функция не определена, когда знаменатель равен нулю:
+          <span class="formula">x² = 0  ⇒  x = 0</span>
+          Значит, область определения — все действительные числа, кроме нуля.
+          <br><br>
+          <b>Ответ: (−∞; 0) ∪ (0; +∞)</b>
+        </div>
+      </div>
+
+      <div class="exam-task" id="task4">
+        <span class="level level-basic">БАЗОВЫЙ · №4</span>
+        <div class="question">
+          Найдите значение производной функции f(x) = x² в точке x = 3.
+        </div>
+        <div class="answers">
+          <button class="answer-btn" onclick="checkAnswer('task4', 0, this)">3</button>
+          <button class="answer-btn" onclick="checkAnswer('task4', 1, this)">6</button>
+          <button class="answer-btn" onclick="checkAnswer('task4', 2, this)">9</button>
+          <button class="answer-btn" onclick="checkAnswer('task4', 3, this)">2</button>
+        </div>
+        <button class="show-solution-btn" onclick="showSolution('task4')">Показать решение</button>
+        <div class="solution">
+          <b>Решение:</b>
+          Находим производную по формуле (xⁿ)′ = n·xⁿ⁻¹:
+          <span class="formula">f′(x) = (x²)′ = 2x</span>
+          Вычисляем значение в точке x = 3:
+          <span class="formula">f′(3) = 2·3 = 6</span>
+          <b>Ответ: 6</b>
+        </div>
+      </div>
+
+      <div class="exam-task" id="task5">
+        <span class="level level-basic">БАЗОВЫЙ · №5</span>
+        <div class="question">
+          Решите уравнение x³ = 27.
+        </div>
+        <div class="answers">
+          <button class="answer-btn" onclick="checkAnswer('task5', 0, this)">x = 9</button>
+          <button class="answer-btn" onclick="checkAnswer('task5', 1, this)">x = 3</button>
+          <button class="answer-btn" onclick="checkAnswer('task5', 2, this)">x = −3</button>
+          <button class="answer-btn" onclick="checkAnswer('task5', 3, this)">x = ±3</button>
+        </div>
+        <button class="show-solution-btn" onclick="showSolution('task5')">Показать решение</button>
+        <div class="solution">
+          <b>Решение:</b>
+          Функция y = x³ нечётная и монотонно возрастает на всей области определения, поэтому уравнение x³ = a имеет ровно один корень при любом a.
+          <span class="formula">x³ = 27  ⇒  x = ∛27 = 3</span>
+          Проверка: 3³ = 27 ✓
+          <br><br>
+          <b>Ответ: x = 3</b>
+        </div>
+      </div>
+
+      <div class="exam-task" id="task6">
+        <span class="level level-basic">БАЗОВЫЙ · №6</span>
+        <div class="question">
+          На каком промежутке функция f(x) = x² убывает?
+        </div>
+        <div class="answers">
+          <button class="answer-btn" onclick="checkAnswer('task6', 0, this)">[0; +∞)</button>
+          <button class="answer-btn" onclick="checkAnswer('task6', 1, this)">(−∞; 0]</button>
+          <button class="answer-btn" onclick="checkAnswer('task6', 2, this)">(−∞; +∞)</button>
+          <button class="answer-btn" onclick="checkAnswer('task6', 3, this)">Ни на каком</button>
+        </div>
+        <button class="show-solution-btn" onclick="showSolution('task6')">Показать решение</button>
+        <div class="solution">
+          <b>Решение:</b>
+          Функция f(x) = x² — парабола с ветвями вверх и вершиной в точке (0; 0).
+          Левая ветвь параболы идёт вниз при движении слева направо, то есть функция убывает при x ≤ 0.
+          <br><br>
+          Через производную: f′(x) = 2x &lt; 0 при x &lt; 0.
+          <br><br>
+          <b>Ответ: (−∞; 0]</b>
+        </div>
+      </div>
+
+      <div class="exam-header">📗 Профильный уровень</div>
+
+      <div class="exam-task" id="task7">
+        <span class="level level-profile">ПРОФИЛЬ · №1</span>
+        <div class="question">
+          Найдите значение производной функции f(x) = x³ в точке x = 2.
+        </div>
+        <div class="answers">
+          <button class="answer-btn" onclick="checkAnswer('task7', 0, this)">6</button>
+          <button class="answer-btn" onclick="checkAnswer('task7', 1, this)">8</button>
+          <button class="answer-btn" onclick="checkAnswer('task7', 2, this)">12</button>
+          <button class="answer-btn" onclick="checkAnswer('task7', 3, this)">4</button>
+        </div>
+        <button class="show-solution-btn" onclick="showSolution('task7')">Показать решение</button>
+        <div class="solution">
+          <b>Решение:</b>
+          Находим производную по формуле (xⁿ)′ = n·x⁻¹:
+          <span class="formula">f′(x) = (x³)′ = 3x²</span>
+          Вычисляем значение в точке x = 2:
+          <span class="formula">f′(2) = 3·2² = 3·4 = 12</span>
+          <b>Ответ: 12</b>
+        </div>
+      </div>
+
+      <div class="exam-task" id="task8">
+        <span class="level level-profile">ПРОФИЛЬ · №2</span>
+        <div class="question">
+          В какой точке графика функции f(x) = x² касательная параллельна оси Ox?
+        </div>
+        <div class="answers">
+          <button class="answer-btn" onclick="checkAnswer('task8', 0, this)">x = 1</button>
+          <button class="answer-btn" onclick="checkAnswer('task8', 1, this)">x = 0</button>
+          <button class="answer-btn" onclick="checkAnswer('task8', 2, this)">x = −1</button>
+          <button class="answer-btn" onclick="checkAnswer('task8', 3, this)">Такой точки нет</button>
+        </div>
+        <button class="show-solution-btn" onclick="showSolution('task8')">Показать решение</button>
+        <div class="solution">
+          <b>Решение:</b>
+          Касательная параллельна оси Ox, когда её угловой коэффициент равен нулю, то есть f′(x₀) = 0.
+          <span class="formula">f′(x) = (x²)′ = 2x</span>
+          Приравниваем к нулю:
+          <span class="formula">2x = 0  ⇒  x = 0</span>
+          В точке x = 0 функция имеет минимум, касательная горизонтальна.
+          <br><br>
+          <b>Ответ: x = 0</b>
+        </div>
+      </div>
+
+      <div class="exam-task" id="task9">
+        <span class="level level-profile">ПРОФИЛЬ · №3</span>
+        <div class="question">
+          Напишите уравнение касательной к графику функции f(x) = x³ в точке x₀ = 1.
+        </div>
+        <div class="answers">
+          <button class="answer-btn" onclick="checkAnswer('task9', 0, this)">y = 3x − 2</button>
+          <button class="answer-btn" onclick="checkAnswer('task9', 1, this)">y = 3x + 1</button>
+          <button class="answer-btn" onclick="checkAnswer('task9', 2, this)">y = x + 2</button>
+          <button class="answer-btn" onclick="checkAnswer('task9', 3, this)">y = 2x − 1</button>
+        </div>
+        <button class="show-solution-btn" onclick="showSolution('task9')">Показать решение</button>
+        <div class="solution">
+          <b>Решение:</b>
+          Уравнение касательной: <span class="formula">y = f′(x₀)(x − x₀) + f(x₀)</span>
+          <br><br>
+          Шаг 1: f(x₀) = f(1) = 1³ = 1
+          <br>Шаг 2: f′(x) = 3x², значит f′(1) = 3·1² = 3
+          <br>Шаг 3: подставляем в формулу:
+          <span class="formula">y = 3·(x − 1) + 1 = 3x − 3 + 1 = 3x − 2</span>
+          <b>Ответ: y = 3x − 2</b>
+        </div>
+      </div>
+
+      <div class="exam-task" id="task10">
+        <span class="level level-profile">ПРОФИЛЬ · №4</span>
+        <div class="question">
+          Найдите абсциссу точки, в которой касательная к графику функции f(x) = x³ параллельна прямой y = 12x + 5.
+        </div>
+        <div class="answers">
+          <button class="answer-btn" onclick="checkAnswer('task10', 0, this)">x = 2</button>
+          <button class="answer-btn" onclick="checkAnswer('task10', 1, this)">x = 4</button>
+          <button class="answer-btn" onclick="checkAnswer('task10', 2, this)">x = −2</button>
+          <button class="answer-btn" onclick="checkAnswer('task10', 3, this)">x = ±2</button>
+        </div>
+        <button class="show-solution-btn" onclick="showSolution('task10')">Показать решение</button>
+        <div class="solution">
+          <b>Решение:</b>
+          Две прямые параллельны, если их угловые коэффициенты равны. У прямой y = 12x + 5 угловой коэффициент k = 12.
+          <br><br>
+          Значит, нужно найти x₀, при котором f′(x₀) = 12:
+          <span class="formula">f′(x) = 3x²</span>
+          <span class="formula">3x₀² = 12  ⇒  x₀² = 4  ⇒  x₀ = ±2</span>
+          <br><br>
+          <b>Ответ: x = ±2</b>
+        </div>
+      </div>
+
+      <div class="exam-task" id="task11">
+        <span class="level level-profile">ПРОФИЛЬ · №5</span>
+        <div class="question">
+          Найдите точку максимума функции f(x) = x³ − 3x².
+        </div>
+        <div class="answers">
+          <button class="answer-btn" onclick="checkAnswer('task11', 0, this)">x = 0</button>
+          <button class="answer-btn" onclick="checkAnswer('task11', 1, this)">x = 2</button>
+          <button class="answer-btn" onclick="checkAnswer('task11', 2, this)">x = 1</button>
+          <button class="answer-btn" onclick="checkAnswer('task11', 3, this)">x = −2</button>
+        </div>
+        <button class="show-solution-btn" onclick="showSolution('task11')">Показать решение</button>
+        <div class="solution">
+          <b>Решение:</b>
+          Шаг 1: Находим производную:
+          <span class="formula">f′(x) = 3x² − 6x = 3x(x − 2)</span>
+          Шаг 2: Находим критические точки (f′(x) = 0):
+          <span class="formula">3x(x − 2) = 0  ⇒  x = 0 или x = 2</span>
+          Шаг 3: Определяем знак производной на промежутках:
+          <br>• при x &lt; 0: f′(x) &gt; 0 (функция возрастает)
+          <br>• при 0 &lt; x &lt; 2: f′(x) &lt; 0 (функция убывает)
+          <br>• при x &gt; 2: f′(x) &gt; 0 (функция возрастает)
+          <br><br>
+          В точке x = 0 производная меняет знак с «+» на «−» — это точка максимума.
+          <br><br>
+          <b>Ответ: x = 0</b>
+        </div>
+      </div>
+
+      <div class="exam-task" id="task12">
+        <span class="level level-profile">ПРОФИЛЬ · №6</span>
+        <div class="question">
+          Найдите наименьшее значение функции f(x) = x³ − 3x на отрезке [0; 2].
+        </div>
+        <div class="answers">
+          <button class="answer-btn" onclick="checkAnswer('task12', 0, this)">−2</button>
+          <button class="answer-btn" onclick="checkAnswer('task12', 1, this)">0</button>
+          <button class="answer-btn" onclick="checkAnswer('task12', 2, this)">2</button>
+          <button class="answer-btn" onclick="checkAnswer('task12', 3, this)">−1</button>
+        </div>
+        <button class="show-solution-btn" onclick="showSolution('task12')">Показать решение</button>
+        <div class="solution">
+          <b>Решение:</b>
+          Шаг 1: Находим производную:
+          <span class="formula">f′(x) = 3x² − 3 = 3(x² − 1) = 3(x−1)(x+1)</span>
+          Шаг 2: Критические точки: x = 1 и x = −1. На отрезке [0; 2] лежит только x = 1.
+          <br><br>
+          Шаг 3: Вычисляем значения функции в критической точке и на концах отрезка:
+          <span class="formula">f(0) = 0³ − 3·0 = 0</span>
+          <span class="formula">f(1) = 1³ − 3·1 = 1 − 3 = −2</span>
+          <span class="formula">f(2) = 2³ − 3·2 = 8 − 6 = 2</span>
+          <br><br>
+          Наименьшее из этих значений: −2.
+          <br><br>
+          <b>Ответ: −2</b>
+        </div>
+      </div>
+
+      <div class="exam-task" id="task13">
+        <span class="level level-profile">ПРОФИЛЬ · №7</span>
+        <div class="question">
+          Найдите угловой коэффициент касательной к графику функции f(x) = √x в точке x₀ = 4.
+        </div>
+        <div class="answers">
+          <button class="answer-btn" onclick="checkAnswer('task13', 0, this)">1/4</button>
+          <button class="answer-btn" onclick="checkAnswer('task13', 1, this)">1/2</button>
+          <button class="answer-btn" onclick="checkAnswer('task13', 2, this)">2</button>
+          <button class="answer-btn" onclick="checkAnswer('task13', 3, this)">4</button>
+        </div>
+        <button class="show-solution-btn" onclick="showSolution('task13')">Показать решение</button>
+        <div class="solution">
+          <b>Решение:</b>
+          Запишем функцию в виде степенной:
+          <span class="formula">f(x) = √x = x^(1/2)</span>
+          Находим производную по формуле (xⁿ)′ = n·xⁿ⁻¹:
+          <span class="formula">f′(x) = (1/2)·x^(1/2 − 1) = (1/2)·x^(−1/2) = 1/(2√x)</span>
+          Вычисляем в точке x₀ = 4:
+          <span class="formula">f′(4) = 1/(2·√4) = 1/(2·2) = 1/4</span>
+          <br><br>
+          <b>Ответ: 1/4</b>
+        </div>
+      </div>
+
+      <div class="exam-task" id="task14">
+        <span class="level level-profile">ПРОФИЛЬ · №8</span>
+        <div class="question">
+          На промежутке (−∞; 0) функция f(x) = x⁻² является:
+        </div>
+        <div class="answers">
+          <button class="answer-btn" onclick="checkAnswer('task14', 0, this)">Возрастающей</button>
+          <button class="answer-btn" onclick="checkAnswer('task14', 1, this)">Убывающей</button>
+          <button class="answer-btn" onclick="checkAnswer('task14', 2, this)">Постоянной</button>
+          <button class="answer-btn" onclick="checkAnswer('task14', 3, this)">Не монотонной</button>
+        </div>
+        <button class="show-solution-btn" onclick="showSolution('task14')">Показать решение</button>
+        <div class="solution">
+          <b>Решение:</b>
+          Запишем функцию: f(x) = x⁻² = 1/x².
+          <br><br>
+          Находим производную:
+          <span class="formula">f′(x) = −2x⁻³ = −2/x³</span>
+          При x &lt; 0 знаменатель x³ &lt; 0, значит:
+          <span class="formula">f′(x) = −2/(отрицательное) &gt; 0</span>
+          Производная положительна на всём промежутке (−∞; 0), следовательно функция возрастает.
+          <br><br>
+          <i>Геометрически:</i> левая ветвь гиперболы y = 1/x² идёт снизу вверх при движении слева направо.
+          <br><br>
+          <b>Ответ: возрастающей</b>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('graph');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+const cx = W/2, cy = H/2;
+const scale = 30;
+
+let a = 1, n = 2, nType = 'int', m = 1, k = 2, x0 = 1;
+
+function drawAxes() {
+  ctx.clearRect(0, 0, W, H);
+
+  ctx.strokeStyle = '#e8ebf0';
+  ctx.lineWidth = 1;
+  for (let x = -20; x <= 20; x++) {
+    ctx.beginPath();
+    ctx.moveTo(cx + x*scale, 0);
+    ctx.lineTo(cx + x*scale, H);
+    ctx.stroke();
+  }
+  for (let y = -20; y <= 20; y++) {
+    ctx.beginPath();
+    ctx.moveTo(0, cy + y*scale);
+    ctx.lineTo(W, cy + y*scale);
+    ctx.stroke();
+  }
+
+  ctx.strokeStyle = '#2c3e50';
+  ctx.fillStyle = '#2c3e50';
+  ctx.lineWidth = 1.8;
+  ctx.beginPath();
+  ctx.moveTo(0, cy); ctx.lineTo(W, cy);
+  ctx.moveTo(cx, 0); ctx.lineTo(cx, H);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(W-10, cy-5); ctx.lineTo(W, cy); ctx.lineTo(W-10, cy+5); ctx.closePath(); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(cx-5, 10); ctx.lineTo(cx, 0); ctx.lineTo(cx+5, 10); ctx.closePath(); ctx.fill();
+
+  ctx.font = '11px Georgia';
+  for (let x = -10; x <= 10; x++) {
+    if (x === 0) continue;
+    ctx.fillText(x, cx + x*scale - 4, cy + 14);
+  }
+  for (let y = -8; y <= 8; y++) {
+    if (y === 0) continue;
+    ctx.fillText(-y, cx + 5, cy + y*scale + 4);
+  }
+  ctx.font = 'italic 13px Georgia';
+  ctx.fillText('x', W-15, cy-10);
+  ctx.fillText('y', cx+10, 15);
+  ctx.font = '11px Georgia';
+  ctx.fillText('0', cx-12, cy+14);
+}
+
+function f(x) {
+  if (nType === 'frac') {
+    const exp = m/k;
+    if (x < 0 && k % 2 === 0) return null;
+    if (x < 0) return a * Math.sign(x) * Math.pow(Math.abs(x), exp);
+    if (x === 0) return 0;
+    return a * Math.pow(x, exp);
+  }
+  if (n === 0) {
+    if (x === 0) return null;
+    return a;
+  }
+  if (x === 0 && n < 0) return null;
+  if (x < 0) {
+    if (n % 2 === 0) return a * Math.pow(Math.abs(x), n);
+    return a * Math.sign(x) * Math.pow(Math.abs(x), n);
+  }
+  return a * Math.pow(x, n);
+}
+
+function derivative(x) {
+  if (nType === 'frac') {
+    const exp = m/k;
+    if (x <= 0) return null;
+    return a * exp * Math.pow(x, exp - 1);
+  }
+  if (n === 0) return 0;
+  if (x === 0 && n < 0) return null;
+  if (n === 1) return a;
+  if (x < 0) {
+    if (n % 2 === 0) return a * n * Math.pow(Math.abs(x), n-1) * ((n-1)%2===0 ? 1 : -1);
+    return a * n * Math.pow(Math.abs(x), n-1);
+  }
+  return a * n * Math.pow(x, n-1);
+}
+
+function drawGraph() {
+  ctx.strokeStyle = '#8b0000';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  let started = false;
+  let prevY = null;
+  for (let px = 0; px < W; px++) {
+    const x = (px - cx) / scale;
+    const y = f(x);
+    if (y === null || !isFinite(y) || Math.abs(y) > 50) {
+      if (started) ctx.stroke();
+      ctx.beginPath();
+      started = false;
+      prevY = null;
+      continue;
+    }
+    if (prevY !== null && Math.abs(y - prevY) > 30) {
+      ctx.stroke();
+      ctx.beginPath();
+      started = false;
+    }
+    const py = cy - y * scale;
+    if (!started) { ctx.moveTo(px, py); started = true; }
+    else ctx.lineTo(px, py);
+    prevY = y;
+  }
+  ctx.stroke();
+
+  if (n === 0 && nType === 'int') {
+    ctx.strokeStyle = '#8b0000';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(cx, cy - a*scale, 5, 0, 2*Math.PI);
+    ctx.stroke();
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(cx, cy - a*scale, 3, 0, 2*Math.PI);
+    ctx.fill();
+  }
+
+  const y0 = f(x0);
+  const dy = derivative(x0);
+  if (y0 !== null && dy !== null && isFinite(dy)) {
+    ctx.strokeStyle = '#2980b9';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath();
+    const xStart = -10;
+    const xEnd = 10;
+    const yStart = dy * (xStart - x0) + y0;
+    const yEnd = dy * (xEnd - x0) + y0;
+    ctx.moveTo(cx + xStart*scale, cy - yStart*scale);
+    ctx.lineTo(cx + xEnd*scale, cy - yEnd*scale);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = '#2980b9';
+    ctx.beginPath();
+    ctx.arc(cx + x0*scale, cy - y0*scale, 5, 0, 2*Math.PI);
+    ctx.fill();
+  }
+}
+
+function updateProps() {
+  let dom, rng, parity, monot, note = '';
+  let expStr;
+
+  if (nType === 'frac') {
+    expStr = m + '/' + k;
+    dom = '[0; +∞)';
+    rng = '[0; +∞)';
+    parity = 'общего вида';
+    monot = 'возрастает на [0; +∞)';
+    note = (k % 2 === 0)
+      ? 'ОДЗ ограничена, так как знаменатель дроби чётный (корень чётной степени).'
+      : 'Фактически это функция y = ⁿ√(xᵐ).';
+  } else if (n === 0) {
+    expStr = '0';
+    dom = '(−∞; 0) ∪ (0; +∞)';
+    rng = '{' + a + '}';
+    parity = 'чётная';
+    monot = 'постоянна (принимает значение ' + a + ')';
+    note = 'В точке x = 0 функция не определена (0⁰ не имеет смысла) — на графике «прокол».';
+  } else if (n < 0) {
+    expStr = n;
+    dom = '(−∞; 0) ∪ (0; +∞)';
+    rng = '(−; 0) ∪ (0; +)';
+    parity = (Math.abs(n) % 2 === 0) ? 'чётная' : 'нечётная';
+    monot = a > 0 ? 'убывает на (−∞; 0) и на (0; +∞)' : 'возрастает на (−∞; 0) и на (0; +∞)';
+    note = 'Асимптоты: x = 0 (вертикальная), y = 0 (горизонтальная).';
+  } else {
+    expStr = n;
+    if (n % 2 === 0) {
+      dom = '(−∞; +∞)';
+      rng = a > 0 ? '[0; +∞)' : '(−∞; 0]';
+      parity = 'чётная';
+      monot = a > 0 ? 'убывает на (−∞; 0], возрастает на [0; +∞)' : 'возрастает на (−∞; 0], убывает на [0; +∞)';
+    } else {
+      dom = '(−∞; +∞)';
+      rng = '(−∞; +∞)';
+      parity = 'нечётная';
+      monot = a > 0 ? 'возрастает на всей области определения' : 'убывает на всей области определения';
+    }
+  }
+
+  document.getElementById('props').innerHTML =
+    `<b>Показатель степени:</b> p = ${expStr}<br>
+     <b>Область определения D(y):</b> ${dom}<br>
+     <b>Область значений E(y):</b> ${rng}<br>
+     <b>Чётность:</b> ${parity}<br>
+     <b>Монотонность:</b> ${monot}<br>
+     <b>Характерные точки:</b> ${n < 0 || n === 0 ? '(1; ' + a + '), (−1; ' + (n%2===0 ? a : -a) + ')' : '(0; 0), (1; ' + a + ')'}<br>
+     <i style="color:#5a6c7d;font-size:12px;">${note}</i>`;
+}
+
+function updateFormula() {
+  let nStr;
+  if (nType === 'frac') nStr = '<sup>' + m + '/' + k + '</sup>';
+  else nStr = '<sup>' + n + '</sup>';
+  let aStr;
+  if (a === 1) aStr = '';
+  else if (a === -1) aStr = '−';
+  else aStr = a + '·';
+  document.getElementById('formula').innerHTML = 'y = ' + aStr + 'x' + nStr;
+}
+
+function updateTable() {
+  const xs = [-3, -2, -1, 0, 1, 2, 3];
+  xs.forEach(x => {
+    const y = f(x);
+    const cell = document.getElementById('y' + (x < 0 ? x : x));
+    if (y === null || !isFinite(y)) {
+      cell.innerHTML = '<span class="undefined">не опр.</span>';
+    } else {
+      cell.textContent = Math.round(y * 1000) / 1000;
+    }
+  });
+}
+
+function updateTangent() {
+  const y0 = f(x0);
+  const dy = derivative(x0);
+  document.getElementById('x0Display').textContent = x0;
+
+  if (y0 === null || dy === null || !isFinite(dy)) {
+    document.getElementById('tangentFormula').textContent = 'касательная не существует';
+    document.getElementById('derivativeVal').textContent = 'не опр.';
+    return;
+  }
+
+  const b = y0 - dy * x0;
+  let eq = 'y = ';
+  if (dy === 0) {
+    eq += b;
+  } else if (dy === 1) {
+    eq += 'x';
+    if (b > 0) eq += ' + ' + b;
+    else if (b < 0) eq += ' − ' + Math.abs(b);
+  } else if (dy === -1) {
+    eq += '−x';
+    if (b > 0) eq += ' + ' + b;
+    else if (b < 0) eq += ' − ' + Math.abs(b);
+  } else {
+    eq += dy + 'x';
+    if (b > 0) eq += ' + ' + b;
+    else if (b < 0) eq += ' − ' + Math.abs(b);
+  }
+
+  document.getElementById('tangentFormula').textContent = eq;
+  document.getElementById('derivativeVal').textContent = Math.round(dy * 1000) / 1000;
+}
+
+function render() {
+  drawAxes();
+  drawGraph();
+  updateFormula();
+  updateProps();
+  updateTable();
+  updateTangent();
+}
+
+document.getElementById('a').oninput = e => {
+  a = parseFloat(e.target.value);
+  document.getElementById('aVal').textContent = a;
+  render();
+};
+document.getElementById('n').oninput = e => {
+  n = parseInt(e.target.value);
+  document.getElementById('nVal').textContent = n;
+  render();
+};
+document.getElementById('m').oninput = e => {
+  m = parseInt(e.target.value);
+  document.getElementById('mVal').textContent = m;
+  render();
+};
+document.getElementById('k').oninput = e => {
+  k = parseInt(e.target.value);
+  document.getElementById('kVal').textContent = k;
+  render();
+};
+document.getElementById('x0').oninput = e => {
+  x0 = parseFloat(e.target.value);
+  document.getElementById('x0Val').textContent = x0;
+  render();
+};
+document.getElementById('nType').onchange = e => {
+  nType = e.target.value;
+  document.getElementById('intCtrl').style.display = nType !== 'frac' ? 'block' : 'none';
+  document.getElementById('fracCtrl').style.display = nType === 'frac' ? 'block' : 'none';
+  const nSlider = document.getElementById('n');
+  if (nType === 'neg') {
+    nSlider.min = -10; nSlider.max = -1; nSlider.step = 1;
+    n = -1;
+  } else {
+    nSlider.min = 0; nSlider.max = 10; nSlider.step = 1;
+    n = 2;
+  }
+  nSlider.value = n;
+  document.getElementById('nVal').textContent = n;
+  render();
+};
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('graphContent').classList.toggle('active', tab === 'graph');
+  document.getElementById('memoContent').classList.toggle('active', tab === 'memo');
+  document.getElementById('examContent').classList.toggle('active', tab === 'exam');
+}
+
+function checkAnswer(taskId, answerIdx, btn) {
+  const task = document.getElementById(taskId);
+  const buttons = task.querySelectorAll('.answer-btn');
+  const correctAnswers = {
+    'task1': 1, 'task2': 0, 'task3': 2, 'task4': 1, 'task5': 1, 'task6': 1,
+    'task7': 2, 'task8': 1, 'task9': 0, 'task10': 3, 'task11': 0, 'task12': 0,
+    'task13': 0, 'task14': 0
+  };
+
+  buttons.forEach(b => b.disabled = true);
+
+  if (answerIdx === correctAnswers[taskId]) {
+    btn.classList.add('correct');
+  } else {
+    btn.classList.add('wrong');
+    buttons[correctAnswers[taskId]].classList.add('correct');
+  }
+
+  task.querySelector('.show-solution-btn').classList.add('show');
+}
+
+function showSolution(taskId) {
+  const task = document.getElementById(taskId);
+  task.querySelector('.solution').classList.add('show');
+}
+
+render();
+</script>
+</body>
+</html>
